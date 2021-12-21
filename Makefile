@@ -31,7 +31,7 @@ PACKAGE		= splitpatch
 VERSION		=
 
 DESTDIR		=
-prefix		= /usr
+prefix		= /usr/local
 exec_prefix	= $(prefix)
 man_prefix	= $(prefix)/share
 mandir		= $(man_prefix)/man
