@@ -71,9 +71,17 @@ class Splitter
         end
     end
 
+    def getFilenameGit(line)
+        # diff --git a/path/to/file b/path/to/file
+        tokens = line.split(" ")
+        tokens = tokens[3].split("/")
+        return tokens[1..-1].join('-')
+    end
+
     # Split the patchfile by files 
     def splitByFile
         legacy = false
+        git = false
         outfile = nil
         stream = open(@filename)
         until (stream.eof?)
@@ -91,7 +99,16 @@ class Splitter
                 filename << ".patch"
                 outfile = createFile(filename)
                 outfile.write(line)
-            elsif (line =~ /--- .*/) == 0 and not legacy
+            elsif (line =~ /^diff --git a.*/) == 0 and not legacy
+                git = true
+                if (outfile)
+                    outfile.close_write
+                end
+                filename = getFilenameGit(line)
+                filename << ".patch"
+                outfile = createFile(filename)
+                outfile.write(line) 
+            elsif (line =~ /--- .*/) == 0 and not legacy and not git
                 if (outfile) 
                     outfile.close_write
                 end
